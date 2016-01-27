@@ -1,5 +1,28 @@
-#!/usr/bin/python
-# AdaptML
+#!/usr/bin/env python
+
+#--- Option parsing ---#
+"""
+JointML: Cluster assignment
+         
+Usage:
+  JointML [options] <tree> <outgroup>
+  JointML -h | --help
+  JointML --version
+
+Options:
+  <tree>       Tree file in newick format.
+  <outgroup>   Outgroup name.
+  -h=<h>       Habitat file. [Default: habitat.matrix]
+  -m=<m>       mu file. [Default: mu.val]
+  -c=<c>       color file. [Default: color.file]
+  -w=<w>       Write directory. [Default: .]
+  -h --help    Show this screen.
+  --version    Show version.
+
+Description:
+  Cluster assignment.
+"""
+
 
 import os
 import sys
@@ -7,6 +30,7 @@ import pdb
 import time
 import random
 
+import docopt
 from numpy.linalg import *
 from numpy.core import *
 from numpy.lib import *
@@ -18,42 +42,46 @@ import ML
 start_time = time.time()
 sys.setrecursionlimit(25000)
 
-# potential variables:
-tree_fn = None
-outgroup = None
-migration_fn = None
-mu_fn = None
-thresh_fn = None
-color_map_fn = None
-write_dir = None
-cdist = False
-to_truncate = False
-obs_states = None
 
-# load inputs #
-inputs = sys.argv
-for ind in range(1,len(inputs)):
-    arg_parts = inputs[ind].split('=')
-    code = arg_parts[0]
-    arg = arg_parts[1]
-    if code == 'tree':
-        tree_fn = arg
-    elif code == 'truncate':
-        to_truncate = True
-    elif code == 'outgroup':
-        outgroup = [arg]
-    elif code == 'habitats':
-        migration_fn = arg
-    elif code == 'mu':
-        mu_fn = arg
-    elif code == 'color':
-        color_fn = arg
-    elif code == 'write':
-        write_dir = arg
-    elif code =='thresh':
-        thresh_fn = arg
-    elif code == 'cdist':
-        cdist = True
+
+# potential variables:
+# tree_fn = None
+# outgroup = None
+# migration_fn = None
+# mu_fn = None
+# thresh_fn = None
+# color_map_fn = None
+# write_dir = None
+# cdist = False
+# to_truncate = False
+# obs_states = None
+
+# # load inputs #
+# inputs = sys.argv
+# for ind in range(1,len(inputs)):
+#     arg_parts = inputs[ind].split('=')
+#     code = arg_parts[0]
+#     arg = arg_parts[1]
+#     if code == 'tree':
+#         tree_fn = arg
+#     elif code == 'truncate':
+#         to_truncate = True
+#     elif code == 'outgroup':
+#         outgroup = [arg]
+#     elif code == 'habitats':
+#         migration_fn = arg
+#     elif code == 'mu':
+#         mu_fn = arg
+#     elif code == 'color':
+#         color_fn = arg
+#     elif code == 'write':
+#         write_dir = arg
+#     elif code =='thresh':
+#         thresh_fn = arg
+#     elif code == 'cdist':
+#         cdist = True
+
+
         
 # read in data files
 params = {}
@@ -286,3 +314,8 @@ if thresh_fn is not None:
     bars_f.close()
     strain_f.close()
 
+
+if __name__ == '__main__':
+    # user-defined args
+    uargs = docopt(__doc__, version='0.1', options_first=True)    
+    uargs['-w'] = os.path.abspath(uargs['-w'])

@@ -253,13 +253,13 @@ def write_results(habitat_matrix, mu, stats, write_dir):
     outFile = os.path.join(write_dir, 'mu.val')
     with open(outFile,'w') as outFH:
         outFH.write(str(mu))
-    sys.stderr.write('File written: {}'.format(outFile))
+    sys.stderr.write('File written: {}\n'.format(outFile))
 
     ## habitat matrix
     outFile = os.path.join(write_dir, 'habitat.matrix')
     with open(outFile,'w') as outFH:
         outFH.write(str(habitat_matrix))
-    sys.stderr.write('File written: {}'.format(outFile))
+    sys.stderr.write('File written: {}\n'.format(outFile))
     
     ## stats file
     outFile = os.path.join(write_dir, 'stats.txt')
@@ -267,7 +267,7 @@ def write_results(habitat_matrix, mu, stats, write_dir):
         for x in stats:
             x = [str(y) for y in x]
             outFH.write('\t'.join(x) + '\n')
-    sys.stderr.write('File written: {}'.format(outFile))
+    sys.stderr.write('File written: {}\n'.format(outFile))
 
 
 def build_init_rate_matrix(tree, uargs):
