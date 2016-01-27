@@ -166,10 +166,10 @@ def learn_habitats(tree, habitat_matrix, mu, rateopt,
     score = -9999.99999999
     diff = 1.0
     old_diff = 1.0
-    msg = 'The convergence threshold must be between 0 & 1'
-    assert 0 <= converge_thresh <= 1, msg
-    msg = 'The collapse threshold must be between 0 & 1'
-    assert 0 <= habitat_thresh <= 1, msg
+    msg = 'The convergence threshold ({}) must be between 0 & 1'
+    assert 0 <= converge_thresh <= 1, msg.format(converge_thresh)
+    msg = 'The collapse threshold ({}) must be between 0 & 1'
+    assert 0 <= habitat_thresh <= 1, msg.format(habitat_thresh)
 
     stats_header = ['counter', 'habs', 'ML_score', 'mu', 'habitat dist diff']
     stats = [stats_header]
@@ -253,11 +253,13 @@ def write_results(habitat_matrix, mu, stats, write_dir):
     outFile = os.path.join(write_dir, 'mu.val')
     with open(outFile,'w') as outFH:
         outFH.write(str(mu))
+    sys.stderr.write('File written: {}'.format(outFile))
 
     ## habitat matrix
     outFile = os.path.join(write_dir, 'habitat.matrix')
     with open(outFile,'w') as outFH:
         outFH.write(str(habitat_matrix))
+    sys.stderr.write('File written: {}'.format(outFile))
     
     ## stats file
     outFile = os.path.join(write_dir, 'stats.txt')
@@ -265,6 +267,7 @@ def write_results(habitat_matrix, mu, stats, write_dir):
         for x in stats:
             x = [str(y) for y in x]
             outFH.write('\t'.join(x) + '\n')
+    sys.stderr.write('File written: {}'.format(outFile))
 
 
 def build_init_rate_matrix(tree, uargs):
@@ -280,7 +283,7 @@ def build_init_rate_matrix(tree, uargs):
     habitat_matrix, mu, stats = learn_habitats(tree, habitat_matrix, 
                                                mu=uargs['-m'], 
                                                rateopt=uargs['-r'], 
-                                               habitat_thresh=['-c'],
+                                               habitat_thresh=uargs['-c'],
                                                converge_thresh=uargs['-v'])
     
     # taking the best parameters
