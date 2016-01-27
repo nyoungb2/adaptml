@@ -21,7 +21,19 @@ Options:
   --version    Show version.
 
 Description:
-  Cluster assignment. 
+  Habitat assignment to nodes on the tree.
+
+  `color` option:
+     File specifying visualization colors for both leaves and ancestral 
+     nodes on phylogenetic tree.  Leaves sharing identical ecology will 
+     have the same radial bar plots; ancestral nodes sharing the same 
+     ancestral assignment will also have uniform colors. To specify bar 
+     plot components, identify EcologyID character position in column 1 
+     (character position begins at 1) and desired character in column 2.  
+     To specify habitat colors, put an 'H' in column 1 and identify the 
+     habitat number in column 2.  Columns 3, 4, & 5 define R, G, & B 
+     integer values from (0,255). Each column should be single-space 
+     delimited.
 """
 
 
@@ -45,43 +57,6 @@ sys.setrecursionlimit(25000)
 
 
 
-# potential variables:
-# tree_fn = None
-# outgroup = None
-# migration_fn = None
-# mu_fn = None
-# thresh_fn = None
-# color_map_fn = None
-# write_dir = None
-# cdist = False
-# to_truncate = False
-# obs_states = None
-
-# # load inputs #
-# inputs = sys.argv
-# for ind in range(1,len(inputs)):
-#     arg_parts = inputs[ind].split('=')
-#     code = arg_parts[0]
-#     arg = arg_parts[1]
-#     if code == 'tree':
-#         tree_fn = arg
-#     elif code == 'truncate':
-#         to_truncate = True
-#     elif code == 'outgroup':
-#         outgroup = [arg]
-#     elif code == 'habitats':
-#         migration_fn = arg
-#     elif code == 'mu':
-#         mu_fn = arg
-#     elif code == 'color':
-#         color_fn = arg
-#     elif code == 'write':
-#         write_dir = arg
-#     elif code =='thresh':
-#         thresh_fn = arg
-#     elif code == 'cdist':
-#         cdist = True
-
 def load_migration(inFile):
     # migration 
     with open(inFile,'r') as inFH:
@@ -99,7 +74,6 @@ def load_colors(inFile):
     # colors
     color_hash = {}
     with open(inFile, 'r') as inFH:
-        #color_f = open(color_fn,'r')
         for line in inFH:
             parts = line.strip().split(' ')
             ring_number = parts[0]
@@ -112,8 +86,8 @@ def load_colors(inFile):
                 hex_color = hex_val[2:]
                 if len(hex_color) < 2:
                     hex_color = "0" + hex_color
-            hex_code += hex_color
-        color_hash[ring_number][ring_state] = hex_code
+                hex_code += hex_color
+            color_hash[ring_number][ring_state] = hex_code
     return color_hash
 
 def laod_thresh(inFile):    
@@ -148,6 +122,7 @@ def laod_thresh(inFile):
 #--- lik --#
 #lik_fn = write_dir + "/lik.file"
 #lik_f =  open(lik_fn,"w")
+
 
 def build_tree(treeFile):
     # build the tree #
@@ -275,13 +250,13 @@ def draw_tree(tree, true_root, full_f, write_dir):
     with open(itol_fn,"w") as outFH:
         outFH.write(true_root.treePrint("") + ";")
 
-
-def write_full():    
-    # print out the full file
-    print "Write out results"
+    sys.stderr.write('Writting out results\n')
     true_root.FulliTol(files)
-    
 
+
+
+def write_full(tree, true_root, files, write_dir):    
+    
     strain_fn = os.path.join(write_dir, 'strain.names')
     strain_f = open(strain_fn,"w")
 
@@ -289,7 +264,8 @@ def write_full():
     divergers = true_root.GetDivergencePoints()
     true_root.divergers = divergers
 
-    true_root.ClusterTest(files,params)
+    params = {'cdist' : False}
+    #true_root.ClusterTest(files,params)
     true_root.DrawSubclusters(None,cluster_f)
     tree.DrawLeaves(files)
 
@@ -361,6 +337,9 @@ def jointML(uargs):
 
     # draw tree
     draw_tree(tree, true_root, full_f, write_dir)
+
+    # writing full iTOL table
+    #write_full(tree, true_root, files, write_dir)
     
     # closing
     full_f.close()
