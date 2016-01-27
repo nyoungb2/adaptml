@@ -233,18 +233,6 @@ def learn_habitats(tree, habitat_matrix, mu, rateopt,
 
     return habitat_matrix, mu, stats
 
-
-def get_best_params(tree, outgroup):
-    """Take the best parameters
-    """
-    # find the branch you're interested in by looking at the partition on
-    # leaves the branch defines
-    for b in tree.branch_list:
-        names_1 = b.ends[0].name_dict[b.ends[1]]
-        names_2 = b.ends[1].name_dict[b.ends[0]]
-        if names_1 == outgroup or names_2 == outgroup:
-            tree.rootify(b)
-
     
 def write_results(habitat_matrix, mu, stats, write_dir):
     """Write out the results
@@ -285,9 +273,6 @@ def build_init_rate_matrix(tree, uargs):
                                                rateopt=uargs['-r'], 
                                                habitat_thresh=uargs['-c'],
                                                converge_thresh=uargs['-v'])
-    
-    # taking the best parameters
-    get_best_params(tree, uargs['<outgroup>'])
     
     # writing out the results
     write_results(habitat_matrix, mu, stats, write_dir=uargs['-w'])
